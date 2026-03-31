@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -9,685 +8,1419 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-/* ===== RESET & ROOT ===== /
-,::before,::after{box-sizing:border-box;margin:0;padding:0}
+/* ===== RESET & ROOT ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
---black:#0a0a0a;
---white:#fafafa;
---off-white:#f0ede8;
---grey-light:#e8e4df;
---grey-mid:#b0a99e;
---grey-dark:#4a4540;
---gold:#8b7355;
---font-serif:'Cormorant Garamond',Georgia,serif;
---font-sans:'Raleway',sans-serif;
+  --black:#0a0a0a;
+  --white:#fafafa;
+  --off-white:#f0ede8;
+  --grey-light:#e8e4df;
+  --grey-mid:#b0a99e;
+  --grey-dark:#4a4540;
+  --gold:#8b7355;
+  --font-serif:'Cormorant Garamond',Georgia,serif;
+  --font-sans:'Raleway',sans-serif;
 }
 html{scroll-behavior:smooth;font-size:16px}
 body{
-background-color:var(--white);
-color:var(--black);
-font-family:var(--font-sans);
-overflow-x:hidden;
-line-height:1.6;
+  background:var(--white);color:var(--black);
+  font-family:var(--font-sans);overflow-x:hidden;line-height:1.6;
 }
-
-/* ===== UTILS ===== */
-.reveal{opacity:0;transform:translateY(30px);transition:all 0.8s ease-out}
-.revealed{opacity:1;transform:translateY(0)}
-.container{max-width:1280px;margin:0 auto;padding:0 20px}
-ul{list-style:none}
+img{max-width:100%;display:block}
 a{text-decoration:none;color:inherit}
+button{cursor:pointer;border:none;background:none;font-family:inherit;outline:none}
+input,select{font-family:inherit;outline:none}
 
-/* ===== HEADER / NAV ===== */
-header{
-position:fixed;top:0;left:0;width:100%;z-index:1000;
-background:rgba(250,250,250,0.9);
-backdrop-filter:blur(8px);
-border-bottom:1px solid var(--grey-light);
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--off-white)}
+::-webkit-scrollbar-thumb{background:var(--grey-mid);border-radius:2px}
+
+/* ============================================================
+   LOADER
+============================================================ */
+#loader{
+  position:fixed;inset:0;background:var(--black);
+  z-index:9999;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  transition:opacity .9s ease,visibility .9s ease;
+  visibility:visible;opacity:1;
 }
-.nav-inner{
-display:flex;justify-content:space-between;align-items:center;
-height:70px;
+#loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.loader-logo{
+  width:200px;height:auto;opacity:0;transform:scale(.82);
+  animation:loaderLogoAnim 1.1s cubic-bezier(.22,1,.36,1) .4s forwards;
+  filter:brightness(0) invert(1);
 }
-.logo{
-font-family:var(--font-serif);
-font-size:1.6rem;font-weight:600;letter-spacing:1px;
-text-transform:uppercase;color:var(--black);
+.loader-brand{
+  margin-top:28px;text-align:center;
+  opacity:0;transform:translateY(10px);
+  animation:loaderBrandAnim .7s ease 1.5s forwards;
 }
-.nav-links{display:flex;gap:30px}
+.loader-brand h1{
+  font-family:var(--font-serif);color:var(--white);
+  font-size:1.9rem;font-weight:400;letter-spacing:.18em;text-transform:uppercase;
+}
+.loader-brand p{
+  color:var(--grey-mid);font-size:.65rem;letter-spacing:.4em;
+  text-transform:uppercase;margin-top:8px;font-weight:300;
+}
+.loader-line{
+  width:0;height:1px;background:var(--grey-mid);
+  margin:22px auto 0;
+  animation:loaderLineAnim .6s ease 2.1s forwards;
+}
+@keyframes loaderLogoAnim{to{opacity:1;transform:scale(1)}}
+@keyframes loaderBrandAnim{to{opacity:1;transform:translateY(0)}}
+@keyframes loaderLineAnim{to{width:100px}}
+
+/* ============================================================
+   SITE WRAPPER
+============================================================ */
+#site{opacity:0;transition:opacity .7s ease}
+#site.visible{opacity:1}
+
+/* ============================================================
+   HEADER
+============================================================ */
+#mainHeader{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  padding:0 5vw;height:70px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(250,250,250,.94);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--grey-light);
+  transition:background .3s,border-color .3s;
+}
+#mainHeader.scrolled{
+  background:rgba(10,10,10,.97);border-bottom-color:#181818;
+}
+#mainHeader.scrolled .nav-logo{filter:brightness(0) invert(1)}
+#mainHeader.scrolled .nav-links a{color:rgba(255,255,255,.65)}
+#mainHeader.scrolled .nav-links a:hover{color:#fff}
+#mainHeader.scrolled #headerCta{border-color:rgba(255,255,255,.3);color:#fff}
+#mainHeader.scrolled #headerCta:hover{background:#fff;color:#000;border-color:#fff}
+#mainHeader.scrolled .hamburger span{background:#fff}
+
+.nav-logo{height:44px;object-fit:contain;display:block}
+.nav-links{display:flex;gap:32px;list-style:none;align-items:center}
 .nav-links a{
-font-size:0.85rem;text-transform:uppercase;letter-spacing:1.5px;
-font-weight:500;transition:color 0.3s;
+  font-size:.64rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--grey-dark);font-weight:500;transition:color .2s;
 }
-.nav-links a:hover{color:var(--gold)}
+.nav-links a:hover{color:var(--black)}
+#headerCta{
+  font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
+  padding:9px 22px;border:1.5px solid var(--grey-dark);color:var(--grey-dark);
+  font-weight:600;transition:all .22s;cursor:pointer;
+}
+#headerCta:hover{background:var(--black);color:var(--white);border-color:var(--black)}
 
-/* Mobile Menu Toggle */
-.menu-toggle{display:none;font-size:1.5rem;cursor:pointer}
-
-/* ===== HERO SECTION ===== */
-.hero{
-height:100vh;display:flex;align-items:center;justify-content:center;
-text-align:center;position:relative;background-color:var(--off-white);
-padding-top:70px;overflow:hidden;
+/* Hamburger */
+.hamburger{
+  display:none;flex-direction:column;gap:5px;
+  cursor:pointer;padding:4px;background:none;border:none;
 }
-.hero-content{z-index:2;max-width:800px}
-.hero-subtitle{
-font-family:var(--font-sans);font-size:0.9rem;text-transform:uppercase;
-letter-spacing:4px;color:var(--gold);margin-bottom:15px;display:block;
-}
-.hero-title{
-font-family:var(--font-serif);font-size:clamp(2.5rem, 8vw, 4.5rem);
-font-weight:400;line-height:1.1;margin-bottom:25px;
-}
-.hero-btn{
-display:inline-block;padding:15px 40px;border:1px solid var(--black);
-font-size:0.8rem;text-transform:uppercase;letter-spacing:2px;
-transition:all 0.4s;cursor:pointer;background:transparent;
-}
-.hero-btn:hover{background:var(--black);color:var(--white)}
-
-/* Background Accents */
-.hero-bg-text{
-position:absolute;font-family:var(--font-serif);font-size:25vw;
-color:rgba(0,0,0,0.03);white-space:nowrap;bottom:-5%;left:50%;
-transform:translateX(-50%);z-index:1;pointer-events:none;
+.hamburger span{
+  display:block;width:24px;height:1.5px;background:var(--black);transition:.28s;
 }
 
-/* ===== COLLECTIONS / PRODUCTS ===== */
-.section-padding{padding:100px 0}
-.section-header{text-align:center;margin-bottom:60px}
-.section-tag{
-font-size:0.75rem;text-transform:uppercase;letter-spacing:3px;
-color:var(--gold);margin-bottom:10px;display:block;
+/* ============================================================
+   MOBILE NAV
+============================================================ */
+#mobileNav{
+  display:none;position:fixed;inset:0;background:var(--black);z-index:490;
+  padding:0 8vw;flex-direction:column;justify-content:center;gap:0;
+  opacity:0;transform:translateX(100%);
+  transition:opacity .35s ease,transform .35s ease;
 }
+#mobileNav.open{
+  display:flex;opacity:1;transform:translateX(0);
+}
+.mob-close{
+  position:absolute;top:22px;right:22px;
+  color:rgba(255,255,255,.6);font-size:1.4rem;
+  cursor:pointer;background:none;border:none;transition:color .2s;
+  line-height:1;padding:4px;
+}
+.mob-close:hover{color:#fff}
+#mobileNav a{
+  font-family:var(--font-serif);font-size:2rem;color:rgba(255,255,255,.8);
+  letter-spacing:.04em;font-weight:400;
+  padding:18px 0;border-bottom:1px solid rgba(255,255,255,.07);
+  transition:color .2s;display:block;
+}
+#mobileNav a:hover{color:#fff}
+#mobileNav a:last-child{border-bottom:none}
+
+/* ============================================================
+   HERO
+============================================================ */
+#hero{
+  min-height:100vh;display:flex;align-items:center;
+  padding:120px 5vw 80px;position:relative;overflow:hidden;
+  background:var(--black);
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at 28% 55%,#1c140e 0%,var(--black) 72%);
+  pointer-events:none;
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+}
+.hero-content{position:relative;z-index:2;max-width:660px}
+.hero-eyebrow{
+  font-size:.58rem;letter-spacing:.45em;text-transform:uppercase;
+  color:var(--gold);font-weight:500;margin-bottom:22px;
+  display:flex;align-items:center;gap:14px;
+}
+.hero-eyebrow::before{
+  content:'';flex-shrink:0;display:inline-block;width:36px;height:1px;background:var(--gold);
+}
+.hero-content h1{
+  font-family:var(--font-serif);color:var(--white);
+  font-size:clamp(2.8rem,5.5vw,4.8rem);font-weight:400;
+  line-height:1.1;letter-spacing:.02em;margin-bottom:22px;
+}
+.hero-content h1 em{color:var(--gold);font-style:italic}
+.hero-sub{
+  color:rgba(255,255,255,.5);font-size:.85rem;letter-spacing:.06em;
+  line-height:1.9;max-width:480px;margin-bottom:42px;font-weight:300;
+}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+.btn-hero-primary{
+  padding:14px 32px;background:var(--white);color:var(--black);
+  font-size:.65rem;letter-spacing:.28em;text-transform:uppercase;
+  font-weight:700;font-family:var(--font-sans);
+  transition:background .22s,color .22s;cursor:pointer;
+  display:inline-block;
+}
+.btn-hero-primary:hover{background:var(--gold);color:#fff}
+.btn-hero-outline{
+  padding:14px 32px;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);
+  font-size:.65rem;letter-spacing:.28em;text-transform:uppercase;
+  font-weight:500;font-family:var(--font-sans);
+  transition:border-color .22s,color .22s;cursor:pointer;
+  display:inline-block;
+}
+.btn-hero-outline:hover{border-color:#fff;color:#fff}
+.hero-badge{
+  position:absolute;right:6vw;bottom:14vh;
+  width:108px;height:108px;border:1px solid rgba(255,255,255,.1);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  text-align:center;color:rgba(255,255,255,.3);
+  animation:spinSlow 22s linear infinite;pointer-events:none;
+}
+.hero-badge span{font-size:.45rem;letter-spacing:.2em;text-transform:uppercase;line-height:2.1}
+@keyframes spinSlow{to{transform:rotate(360deg)}}
+
+/* ============================================================
+   MARQUEE BAND
+============================================================ */
+.marquee-band{
+  background:var(--black);padding:13px 0;overflow:hidden;
+  border-top:1px solid #181818;border-bottom:1px solid #181818;
+}
+.marquee-track{
+  display:flex;width:max-content;
+  animation:marqueeAnim 25s linear infinite;
+}
+.marquee-item{
+  font-family:var(--font-serif);font-size:.82rem;letter-spacing:.22em;
+  color:var(--grey-mid);text-transform:uppercase;padding:0 36px;
+  font-style:italic;white-space:nowrap;
+}
+.marquee-dot{color:var(--gold);margin:0 4px}
+@keyframes marqueeAnim{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ============================================================
+   TRUST BAR
+============================================================ */
+#trust{background:var(--off-white);padding:0}
+.trust-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--grey-light);
+}
+.trust-item{
+  padding:40px 24px;text-align:center;
+  border-right:1px solid var(--grey-light);
+}
+.trust-item:last-child{border-right:none}
+.trust-num{
+  font-family:var(--font-serif);font-size:2.6rem;font-weight:300;
+  letter-spacing:-.01em;color:var(--black);margin-bottom:6px;line-height:1;
+}
+.trust-lbl{
+  font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--grey-dark);font-weight:600;
+}
+
+/* ============================================================
+   PRODUCTS
+============================================================ */
+#products{background:var(--off-white);padding:90px 5vw 100px}
+.products-header{margin-bottom:52px;max-width:520px}
+.section-eyebrow{
+  font-size:.58rem;letter-spacing:.42em;text-transform:uppercase;
+  color:var(--gold);font-weight:600;margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-eyebrow::before{content:'';width:28px;height:1px;background:var(--gold);flex-shrink:0}
 .section-title{
-font-family:var(--font-serif);font-size:2.8rem;font-weight:400;
+  font-family:var(--font-serif);font-size:clamp(2rem,3.8vw,3rem);
+  font-weight:400;letter-spacing:.02em;line-height:1.2;margin-bottom:10px;
 }
+.section-sub{color:var(--grey-dark);font-size:.84rem;font-weight:300;letter-spacing:.05em;line-height:1.8}
 
-.product-grid{
-display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
-gap:40px;
-}
+.products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+
+/* Product Card */
 .product-card{
-position:relative;cursor:pointer;overflow:hidden;
+  background:var(--white);overflow:hidden;position:relative;
+  transition:transform .35s ease,box-shadow .35s ease;
 }
-.product-img-box{
-width:100%;aspect-ratio:3/4;background-color:var(--grey-light);
-overflow:hidden;position:relative;
+.product-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 20px 50px rgba(0,0,0,.1);
 }
-.product-img-box img{
-width:100%;height:100%;object-fit:cover;transition:transform 0.8s ease;
+.product-img-wrap{width:100%;height:300px;position:relative;overflow:hidden}
+.product-img-inner{
+  width:100%;height:100%;position:relative;overflow:hidden;
+  transition:transform .5s ease;display:flex;align-items:center;justify-content:center;
 }
-.product-card:hover .product-img-box img{transform:scale(1.08)}
+.product-card:hover .product-img-inner{transform:scale(1.04)}
 
-.product-info{margin-top:15px;text-align:center}
-.p-cat{
-font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;
-color:var(--grey-dark);margin-bottom:5px;display:block;
+/* Saree visual designs */
+.saree-geo{background:linear-gradient(140deg,#1a0803 0%,#3d1508 40%,#6b2a10 70%,#8b3e18 100%)}
+.saree-geo::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(115deg,transparent,transparent 28px,rgba(255,210,140,.06) 28px,rgba(255,210,140,.06) 29px);
 }
-.p-name{
-font-family:var(--font-serif);font-size:1.3rem;font-weight:500;
-margin-bottom:5px;
+.saree-silk{background:linear-gradient(140deg,#080810 0%,#101025 35%,#181838 65%,#0e0e1e 100%)}
+.saree-silk::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent,transparent 38px,rgba(160,180,255,.04) 38px,rgba(160,180,255,.04) 39px);
 }
-.p-price{font-size:0.95rem;font-weight:600;color:var(--gold)}
+.saree-crepe{background:linear-gradient(140deg,#080808 0%,#180818 35%,#280e2a 65%,#160618 100%)}
+.saree-crepe::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(58deg,transparent,transparent 22px,rgba(210,140,255,.05) 22px,rgba(210,140,255,.05) 23px);
+}
+.saree-motif{
+  position:absolute;inset:18px;
+  border:1px solid rgba(255,255,255,.07);
+  display:flex;align-items:center;justify-content:center;
+  z-index:1;pointer-events:none;
+}
+.saree-motif-diamond{
+  width:72px;height:72px;border:1px solid rgba(255,255,255,.14);
+  transform:rotate(45deg);display:flex;align-items:center;justify-content:center;
+}
+.saree-motif-diamond::after{
+  content:'✦';color:rgba(255,255,255,.18);font-size:1.3rem;transform:rotate(-45deg);
+}
+.saree-label{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:14px;text-align:center;
+  background:linear-gradient(transparent,rgba(0,0,0,.55));
+  font-size:.42rem;letter-spacing:.35em;color:rgba(255,255,255,.35);
+  text-transform:uppercase;font-family:var(--font-sans);font-weight:600;
+  z-index:2;pointer-events:none;
+}
+.product-badge{
+  position:absolute;top:14px;right:14px;z-index:3;
+  background:var(--black);color:var(--white);
+  font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;
+  padding:5px 12px;font-weight:700;
+}
+.product-info{padding:22px 22px 20px}
+.product-name{
+  font-family:var(--font-serif);font-size:1.2rem;font-weight:500;
+  margin-bottom:6px;letter-spacing:.03em;
+}
+.product-desc{
+  font-size:.74rem;color:var(--grey-dark);line-height:1.65;
+  margin-bottom:18px;font-weight:300;
+}
+.product-footer{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.product-price{
+  font-family:var(--font-serif);font-size:1.35rem;font-weight:600;line-height:1;
+}
+.product-price span{
+  display:block;font-family:var(--font-sans);font-size:.58rem;
+  color:var(--grey-mid);font-weight:400;letter-spacing:.12em;margin-top:3px;
+}
+.btn-buy-now{
+  padding:10px 20px;background:var(--black);color:var(--white);
+  font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;
+  font-weight:700;font-family:var(--font-sans);
+  transition:background .22s,transform .15s;cursor:pointer;
+  flex-shrink:0;display:inline-block;
+}
+.btn-buy-now:hover{background:var(--gold);transform:translateY(-1px)}
+.btn-buy-now:active{transform:translateY(0)}
 
-/* ===== ABOUT SECTION ===== */
-.about{background-color:var(--off-white);display:flex;align-items:center}
-.about-grid{
-display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+/* ============================================================
+   ORDER MODAL
+============================================================ */
+#modalOverlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.72);z-index:1000;
+  align-items:center;justify-content:center;
+  padding:20px;backdrop-filter:blur(5px);
 }
-.about-img{width:100%;aspect-ratio:1/1.2;object-fit:cover}
-.about-text-box{padding-right:40px}
-.about-title{
-font-family:var(--font-serif);font-size:2.5rem;margin-bottom:20px;
+#modalOverlay.active{display:flex}
+.modal-box{
+  background:var(--white);width:100%;max-width:490px;
+  position:relative;overflow:hidden;
+  animation:modalPop .32s cubic-bezier(.22,1,.36,1);
+  max-height:92vh;overflow-y:auto;
 }
-.about-p{margin-bottom:20px;color:var(--grey-dark);font-size:1.05rem}
+@keyframes modalPop{
+  from{opacity:0;transform:scale(.93) translateY(18px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+.modal-head{
+  padding:28px 28px 18px;background:var(--black);
+  display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
+  position:sticky;top:0;z-index:2;
+}
+.modal-head-text h3{
+  font-family:var(--font-serif);color:var(--white);
+  font-size:1.45rem;font-weight:400;letter-spacing:.04em;
+}
+.modal-head-text p{
+  color:rgba(255,255,255,.4);font-size:.65rem;
+  letter-spacing:.16em;margin-top:4px;
+}
+#modalClose{
+  color:rgba(255,255,255,.4);font-size:1.4rem;cursor:pointer;
+  line-height:1;padding:2px;transition:color .18s;
+  background:none;border:none;flex-shrink:0;margin-top:-2px;
+}
+#modalClose:hover{color:#fff}
+#modalProductLabel{
+  padding:11px 28px;background:#111;
+  font-family:var(--font-serif);color:var(--gold);
+  font-style:italic;font-size:.95rem;letter-spacing:.06em;
+  border-bottom:1px solid #1e1e1e;
+}
+.modal-body{padding:26px 28px 10px}
+.form-group{margin-bottom:22px}
+.form-lbl{
+  display:block;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--grey-dark);font-weight:700;margin-bottom:9px;
+}
+.form-lbl .req{color:#c0392b;margin-left:2px}
+.form-inp{
+  width:100%;padding:11px 0;
+  border:none;border-bottom:1.5px solid var(--grey-light);
+  font-family:var(--font-sans);font-size:.88rem;color:var(--black);
+  background:transparent;transition:border-color .2s;display:block;
+}
+.form-inp:focus{border-bottom-color:var(--black)}
+.form-inp.error{border-bottom-color:#c0392b}
+.form-error-msg{
+  font-size:.62rem;color:#c0392b;margin-top:5px;display:none;letter-spacing:.08em;
+}
+.form-error-msg.show{display:block}
+.delivery-wrap{display:flex;gap:10px;flex-wrap:wrap}
+.del-opt{
+  flex:1;min-width:130px;padding:13px 14px;
+  border:1.5px solid var(--grey-light);cursor:pointer;
+  transition:border-color .2s,background .2s;
+  display:flex;align-items:center;gap:10px;
+  background:var(--white);
+}
+.del-opt:hover{border-color:var(--grey-mid)}
+.del-opt.selected{border-color:var(--black);background:#f4f2ee}
+.del-opt input[type="radio"]{
+  accent-color:var(--black);width:14px;height:14px;flex-shrink:0;cursor:pointer;
+}
+.del-opt-text{}
+.del-opt-main{font-size:.78rem;font-weight:600;display:block}
+.del-opt-sub{font-size:.62rem;color:var(--grey-mid);display:block;margin-top:2px}
+.modal-foot{
+  padding:14px 28px 28px;
+  display:flex;gap:10px;align-items:center;
+}
+.btn-modal-cancel{
+  padding:13px 18px;border:1.5px solid var(--grey-light);
+  color:var(--grey-dark);font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;font-weight:600;font-family:var(--font-sans);
+  transition:all .2s;cursor:pointer;background:transparent;
+}
+.btn-modal-cancel:hover{border-color:var(--black);color:var(--black)}
+.btn-modal-submit{
+  flex:1;padding:13px;background:var(--black);color:var(--white);
+  font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;
+  font-weight:700;font-family:var(--font-sans);
+  transition:background .22s;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;gap:8px;
+}
+.btn-modal-submit:hover{background:var(--gold)}
+.btn-modal-submit:disabled{background:var(--grey-mid);cursor:not-allowed}
 
-/* ===== CONTACT / FOOTER ===== */
-footer{background-color:var(--black);color:var(--white);padding:80px 0 40px}
-.footer-grid{
-display:grid;grid-template-columns:2fr 1fr 1.5fr;gap:60px;margin-bottom:60px;
+/* ============================================================
+   WHOLESALE SECTION
+============================================================ */
+#wholesale{
+  background:var(--black);
+  padding:90px 5vw 100px;
+  display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;
 }
-.footer-logo{
-font-family:var(--font-serif);font-size:1.8rem;margin-bottom:20px;
-display:block;color:var(--white);
+.ws-title{font-family:var(--font-serif);color:var(--white);font-size:clamp(2rem,3.6vw,3rem);font-weight:400;letter-spacing:.02em;line-height:1.2;margin-bottom:14px}
+.ws-sub{color:rgba(255,255,255,.45);font-size:.84rem;line-height:1.9;font-weight:300;margin-bottom:36px}
+.ws-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn-ws-primary{
+  padding:13px 30px;background:var(--white);color:var(--black);
+  font-size:.63rem;letter-spacing:.26em;text-transform:uppercase;
+  font-weight:700;font-family:var(--font-sans);
+  transition:background .22s,color .22s;cursor:pointer;
+  display:inline-block;
 }
-.footer-p{color:var(--grey-mid);font-size:0.9rem;max-width:300px}
-.footer-head{
-font-size:0.8rem;text-transform:uppercase;letter-spacing:2px;
-margin-bottom:25px;color:var(--gold);
+.btn-ws-primary:hover{background:var(--gold);color:#fff}
+.btn-ws-outline{
+  padding:13px 28px;border:1.5px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);
+  font-size:.63rem;letter-spacing:.26em;text-transform:uppercase;
+  font-weight:500;font-family:var(--font-sans);
+  transition:border-color .22s,color .22s;cursor:pointer;
+  display:inline-block;
 }
-.footer-links li{margin-bottom:12px}
-.footer-links a{font-size:0.9rem;color:var(--grey-mid);transition:0.3s}
-.footer-links a:hover{color:var(--white)}
+.btn-ws-outline:hover{border-color:#fff;color:#fff}
+.ws-cards{display:flex;flex-direction:column;gap:1px;background:rgba(255,255,255,.05)}
+.ws-card{
+  padding:26px 28px;background:var(--black);
+  border-left:2px solid transparent;
+  display:flex;align-items:flex-start;gap:18px;
+  transition:border-color .25s,background .25s;
+}
+.ws-card:hover{border-left-color:var(--gold);background:#0d0d0d}
+.ws-icon{
+  width:42px;height:42px;flex-shrink:0;
+  border:1px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;margin-top:2px;
+}
+.ws-card-title{
+  font-family:var(--font-serif);color:var(--white);
+  font-size:1.02rem;font-weight:500;margin-bottom:5px;
+}
+.ws-card-text{color:rgba(255,255,255,.4);font-size:.76rem;line-height:1.75;font-weight:300}
 
+/* ============================================================
+   PAYMENT SECTION
+============================================================ */
+#paymentSection{
+  background:var(--white);padding:90px 5vw;
+  display:flex;align-items:center;justify-content:center;
+}
+.pay-box{
+  max-width:500px;width:100%;padding:54px;
+  border:1px solid var(--grey-light);text-align:center;
+  position:relative;
+}
+.pay-box::before{
+  content:'SECURE BOOKING';
+  position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  background:var(--gold);color:#fff;
+  font-size:.5rem;letter-spacing:.28em;padding:4px 18px;font-weight:700;
+}
+.pay-amount{
+  font-family:var(--font-serif);font-size:3.2rem;
+  font-weight:300;line-height:1;margin:20px 0 6px;
+}
+.pay-amount sup{font-size:1.6rem;vertical-align:top;margin-top:10px}
+.pay-note{font-size:.64rem;color:var(--grey-mid);letter-spacing:.16em;margin-bottom:34px}
+.btn-pay{
+  width:100%;padding:15px;background:var(--black);color:var(--white);
+  font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;
+  font-weight:700;font-family:var(--font-sans);cursor:pointer;
+  transition:background .22s;display:block;border:none;
+}
+.btn-pay:hover{background:var(--gold)}
+.pay-secure{
+  margin-top:14px;font-size:.6rem;color:var(--grey-mid);
+  letter-spacing:.14em;display:flex;align-items:center;justify-content:center;gap:6px;
+}
+
+/* ============================================================
+   MAP
+============================================================ */
+#locationSection{background:var(--black);padding:0}
+.map-top{
+  padding:56px 5vw 40px;
+  display:flex;justify-content:space-between;align-items:flex-end;
+  flex-wrap:wrap;gap:28px;
+}
+.map-top-title{font-family:var(--font-serif);color:var(--white);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:400;letter-spacing:.02em}
+.map-top-addr{
+  color:rgba(255,255,255,.4);font-size:.76rem;line-height:2.1;
+  text-align:right;font-weight:300;letter-spacing:.06em;
+}
+.map-top-addr a{color:var(--gold);transition:opacity .2s}
+.map-top-addr a:hover{opacity:.75}
+.map-frame{
+  width:100%;height:390px;
+  filter:grayscale(85%) contrast(1.1) brightness(.82);
+}
+.map-frame iframe{width:100%;height:100%;border:none;display:block}
+
+/* ============================================================
+   FOOTER
+============================================================ */
+footer{background:var(--black);padding:64px 5vw 36px;border-top:1px solid #171717}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:56px;margin-bottom:56px}
+.ft-logo{height:52px;filter:brightness(0) invert(1);display:block;margin-bottom:18px}
+.ft-desc{color:rgba(255,255,255,.38);font-size:.76rem;line-height:1.95;font-weight:300;max-width:230px}
+.ft-msme{
+  display:inline-block;margin-top:20px;
+  background:#111;padding:7px 16px;
+  font-size:.55rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--gold);font-weight:700;
+}
+.ft-col-head{
+  font-size:.58rem;letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(255,255,255,.25);font-weight:700;margin-bottom:18px;
+}
+.ft-links{list-style:none;display:flex;flex-direction:column;gap:11px}
+.ft-links a{color:rgba(255,255,255,.38);font-size:.78rem;font-weight:300;transition:color .2s}
+.ft-links a:hover{color:rgba(255,255,255,.8)}
+.ft-contact-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.ft-ci{color:var(--gold);flex-shrink:0;font-size:.9rem;margin-top:1px}
+.ft-ct{color:rgba(255,255,255,.38);font-size:.76rem;line-height:1.8;font-weight:300}
+.ft-ct a{color:inherit;transition:color .2s}
+.ft-ct a:hover{color:rgba(255,255,255,.7)}
 .footer-bottom{
-border-top:1px solid #222;padding-top:30px;text-align:center;
-font-size:0.75rem;color:var(--grey-dark);letter-spacing:1px;
+  border-top:1px solid #171717;padding-top:26px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
 }
+.footer-bottom p{color:rgba(255,255,255,.2);font-size:.64rem;letter-spacing:.1em}
 
-/* ===== MODAL / ORDER DRAWER ===== */
-.modal-overlay{
-position:fixed;top:0;left:0;width:100%;height:100%;
-background:rgba(0,0,0,0.6);z-index:2000;
-display:none;align-items:center;justify-content:center;
-backdrop-filter:blur(4px);
+/* ============================================================
+   CHATBOT
+============================================================ */
+#chatBtn{
+  position:fixed;bottom:26px;right:26px;z-index:800;
+  width:54px;height:54px;background:var(--black);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer;
+  border:none;transition:transform .24s,background .22s;
 }
-.modal-content{
-background:var(--white);width:100%;max-width:500px;
-position:relative;padding:40px;max-height:90vh;overflow-y:auto;
+#chatBtn:hover{transform:scale(1.1);background:#1a1a1a}
+#chatBtn svg{width:22px;height:22px;fill:#fff;display:block}
+.chat-dot{
+  position:absolute;top:1px;right:1px;
+  width:15px;height:15px;background:#25D366;border-radius:50%;
+  border:2px solid #fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.4rem;color:#fff;font-weight:700;
 }
-.close-modal{
-position:absolute;top:20px;right:20px;font-size:1.5rem;
-cursor:pointer;color:var(--black);
+#chatPanel{
+  position:fixed;bottom:94px;right:26px;z-index:800;
+  width:316px;background:#fff;
+  box-shadow:0 16px 52px rgba(0,0,0,.22);
+  overflow:hidden;
+  opacity:0;transform:translateY(14px) scale(.97);
+  pointer-events:none;
+  transition:opacity .28s ease,transform .28s ease;
 }
-.modal-title{font-family:var(--font-serif);font-size:1.8rem;margin-bottom:20px}
-
-/* Form Styles */
-.form-group{margin-bottom:20px}
-label{
-display:block;font-size:0.75rem;text-transform:uppercase;
-letter-spacing:1px;margin-bottom:8px;color:var(--grey-dark);
+#chatPanel.open{
+  opacity:1;transform:translateY(0) scale(1);
+  pointer-events:all;
 }
-input, select, textarea{
-width:100%;padding:12px;border:1px solid var(--grey-light);
-font-family:var(--font-sans);font-size:0.95rem;background:#fff;
+.chat-head{
+  padding:14px 16px;background:var(--black);
+  display:flex;align-items:center;justify-content:space-between;
 }
-input:focus{outline:1px solid var(--gold)}
-
-.delivery-options{display:flex;gap:15px;margin-top:10px}
-.delivery-chip{
-flex:1;border:1px solid var(--grey-light);padding:10px;
-text-align:center;font-size:0.85rem;cursor:pointer;transition:0.3s;
+.chat-head-left{display:flex;align-items:center;gap:10px}
+.chat-av{
+  width:34px;height:34px;border-radius:50%;overflow:hidden;
+  background:#1a1a1a;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
 }
-.delivery-chip.active{border-color:var(--gold);background:var(--off-white);color:var(--gold)}
-
-.submit-btn{
-width:100%;padding:15px;background:var(--black);color:var(--white);
-border:none;text-transform:uppercase;letter-spacing:2px;
-font-size:0.85rem;cursor:pointer;margin-top:10px;transition:0.3s;
+.chat-av img{width:100%;height:100%;object-fit:contain;filter:brightness(0) invert(1)}
+.chat-name-lbl{color:#fff;font-size:.78rem;font-weight:600}
+.chat-online{
+  color:rgba(255,255,255,.5);font-size:.6rem;margin-top:1px;
+  display:flex;align-items:center;gap:5px;
 }
-.submit-btn:hover{background:var(--gold)}
-
-/* Error styling */
-.err-msg{color:#a00;font-size:0.75rem;margin-top:5px;display:none}
-.err-msg.show{display:block}
-
-/* ===== FLOATING CHAT WIDGET ===== */
-.wa-widget{
-position:fixed;bottom:30px;right:30px;z-index:1500;
+.chat-online::before{
+  content:'';width:6px;height:6px;background:#25D366;
+  border-radius:50%;flex-shrink:0;
 }
-.wa-btn{
-width:60px;height:60px;background:#25D366;border-radius:50%;
-display:flex;align-items:center;justify-content:center;
-box-shadow:0 8px 25px rgba(0,0,0,0.2);cursor:pointer;
-transition:transform 0.3s;
+#chatClose{
+  color:rgba(255,255,255,.4);font-size:1.15rem;cursor:pointer;
+  background:none;border:none;line-height:1;padding:2px;
+  transition:color .18s;
 }
-.wa-btn:hover{transform:scale(1.1)}
-.wa-btn svg{width:32px;height:32px;fill:#fff}
-
-.wa-card{
-position:absolute;bottom:80px;right:0;width:300px;
-background:#fff;box-shadow:0 15px 40px rgba(0,0,0,0.15);
-border-radius:12px;display:none;overflow:hidden;
+#chatClose:hover{color:#fff}
+#chatMsgs{
+  height:220px;overflow-y:auto;padding:14px;
+  background:#f6f6f6;display:flex;flex-direction:column;gap:9px;
 }
-.wa-card.active{display:block;animation:slideUp 0.3s ease-out forwards}
-@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-
-.wa-header{background:#075e54;color:#fff;padding:20px;display:flex;align-items:center;gap:12px}
-.wa-avatar{width:40px;height:40px;border-radius:50%;background:#eee;flex-shrink:0}
-.wa-info .wa-name{font-weight:600;font-size:0.95rem;display:block}
-.wa-info .wa-status{font-size:0.75rem;opacity:0.8}
-
-.wa-body{padding:20px;background:#e5ddd5;max-height:250px;overflow-y:auto}
-.wa-bubble{
-background:#fff;padding:10px 15px;border-radius:0 12px 12px 12px;
-font-size:0.85rem;margin-bottom:15px;box-shadow:0 1px 1px rgba(0,0,0,0.1);
-line-height:1.4;
+#chatMsgs::-webkit-scrollbar{width:3px}
+#chatMsgs::-webkit-scrollbar-thumb{background:#ccc}
+.msg-bot{
+  max-width:84%;padding:9px 12px;background:#fff;
+  border-radius:0 10px 10px 10px;
+  font-size:.76rem;line-height:1.55;color:var(--black);
+  align-self:flex-start;
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
+  white-space:pre-line;
 }
-.chat-options{display:flex;flex-direction:column;gap:8px}
+.msg-user{
+  max-width:84%;padding:9px 12px;background:var(--black);
+  border-radius:10px 10px 0 10px;
+  font-size:.76rem;line-height:1.55;color:#fff;
+  align-self:flex-end;
+}
+#chatOpts{
+  display:flex;flex-direction:column;gap:5px;
+  padding:8px 12px 10px;background:#f6f6f6;
+  border-top:1px solid #eee;
+}
 .chat-opt-btn{
-background:#fff;border:1px solid #ddd;padding:10px;
-border-radius:8px;font-size:0.8rem;text-align:left;cursor:pointer;
-transition:0.2s;
+  padding:8px 12px;background:#fff;border:1px solid #ddd;
+  border-radius:5px;font-size:.68rem;text-align:left;
+  cursor:pointer;transition:border-color .2s;
 }
-.chat-opt-btn:hover{background:var(--off-white);border-color:var(--gold)}
+.chat-opt-btn:hover{border-color:var(--gold)}
+#chatWaLink{
+  display:block;width:100%;padding:12px;background:#25D366;
+  color:#fff;font-size:.75rem;font-weight:700;text-align:center;
+  cursor:pointer;border:none;
+}
+#chatWaLink:hover{background:#20ba5a}
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 992px) {
-.about-grid{grid-template-columns:1fr;gap:40px}
-.about-text-box{padding-right:0}
-.footer-grid{grid-template-columns:1fr 1fr}
+/* ============================================================
+   UTILS & ANIMATIONS
+============================================================ */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.revealed{opacity:1;transform:translateY(0)}
+
+@media(max-width:1024px){
+  .products-grid{grid-template-columns:repeat(2,1fr)}
+  #wholesale{grid-template-columns:1fr;gap:40px}
 }
-@media (max-width: 768px) {
-.nav-links{display:none}
-.menu-toggle{display:block}
-.section-title{font-size:2.2rem}
-.footer-grid{grid-template-columns:1fr}
-.hero-title{font-size:3rem}
+@media(max-width:768px){
+  .nav-links,#headerCta{display:none}
+  .hamburger{display:flex}
+  .hero-content h1{font-size:3.2rem}
+  .trust-grid{grid-template-columns:repeat(2,1fr)}
+  .products-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr}
+  .map-top-addr{text-align:left}
 }
 </style>
-
 </head>
 <body>
 
-<header>
-<div class="container nav-inner">
-<div class="logo">Deepanjali</div>
-<ul class="nav-links">
-<li><a href="#">Home</a></li>
-<li><a href="javascript:void(0)" onclick="goTo('products')">Collections</a></li>
-<li><a href="javascript:void(0)" onclick="goTo('about')">Our Story</a></li>
-<li><a href="javascript:void(0)" onclick="goTo('contact')">Contact</a></li>
-</ul>
-<div class="menu-toggle">☰</div>
-</div>
-</header>
-
-<section class="hero">
-<div class="hero-content reveal">
-<span class="hero-subtitle">Surat's Premium Wholesaler</span>
-<h1 class="hero-title">Elevating Traditional Elegance</h1>
-<button class="hero-btn" onclick="goTo('products')">Explore Collections</button>
-</div>
-<div class="hero-bg-text">FANCY</div>
-</section>
-
-<section id="products" class="section-padding">
-<div class="container">
-<div class="section-header reveal">
-<span class="section-tag">New Arrivals</span>
-<h2 class="section-title">The Wholesale Edit</h2>
+<div id="loader">
+  <img class="loader-logo" id="ldrLogo" src="" alt="Deepanjali Prints"/>
+  <div class="loader-brand">
+    <h1>Deepanjali Prints</h1>
+    <p>Premium Saree Wholesale</p>
+    <div class="loader-line"></div>
+  </div>
 </div>
 
-<div class="product-grid">
-  <div class="product-card reveal" onclick="openOrderModal('Banarasi Silk Fusion', '₹850')">
-    <div class="product-img-box">
-      <img src="[https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=800&auto=format&fit=crop](https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=800&auto=format&fit=crop)" alt="Saree 1">
+<div id="site">
+  <header id="mainHeader" role="banner">
+    <a href="#"><img id="navLogo" class="nav-logo" src="" alt="Deepanjali Prints"/></a>
+    <ul class="nav-links" role="navigation">
+      <li><a href="#products">Collection</a></li>
+      <li><a href="#wholesale">Wholesale</a></li>
+      <li><a href="#paymentSection">Booking</a></li>
+      <li><a href="#locationSection">Location</a></li>
+    </ul>
+    <button id="headerCta" onclick="goTo('wholesale')">Enquire Wholesale</button>
+    <button class="hamburger" id="hamBtn" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <div id="mobileNav">
+    <button class="mob-close" id="mobCloseBtn">✕</button>
+    <a href="#products">Our Collection</a>
+    <a href="#wholesale">Wholesale Hub</a>
+    <a href="#paymentSection">Book Visit</a>
+    <a href="#locationSection">Contact Us</a>
+  </div>
+
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content reveal">
+      <div class="hero-eyebrow">ESTABLISHED 2025 • SURAT</div>
+      <h1><em>Premium</em> Saree Wholesale Hub</h1>
+      <p class="hero-sub">Deepanjali Prints brings you the finest Georgette, Silk, and Fancy sarees directly from the heart of Surat’s textile market. We serve retailers across India with quality and trust.</p>
+      <div class="hero-actions">
+        <button class="btn-hero-primary" onclick="goTo('products')">Explore Collection</button>
+        <button class="btn-hero-outline" onclick="goTo('locationSection')">Visit Our Store</button>
+      </div>
     </div>
-    <div class="product-info">
-      <span class="p-cat">Silk Collection</span>
-      <h3 class="p-name">Banarasi Silk Fusion</h3>
-      <p class="p-price">₹850 Wholesale</p>
+    <div class="hero-badge reveal">
+      <span>Quality<br/>Trust<br/>Elegance</span>
+    </div>
+  </section>
+
+  <div class="marquee-band">
+    <div class="marquee-track">
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Wholesale Only</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Factory Direct Pricing</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Shipping Pan India</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Fancy Designer Collection</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Georgette Specialist</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Wholesale Only</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Factory Direct Pricing</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Shipping Pan India</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Fancy Designer Collection</div>
+      <div class="marquee-item"><span class="marquee-dot">✦</span> Georgette Specialist</div>
     </div>
   </div>
 
-  <div class="product-card reveal" onclick="openOrderModal('Organza Floral Print', '₹550')">
-    <div class="product-img-box">
-      <img src="[https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=800&auto=format&fit=crop](https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=800&auto=format&fit=crop)" alt="Saree 2">
+  <section id="trust">
+    <div class="trust-grid">
+      <div class="trust-item reveal">
+        <div class="trust-num">15+</div>
+        <div class="trust-lbl">States Reached</div>
+      </div>
+      <div class="trust-item reveal">
+        <div class="trust-num">500+</div>
+        <div class="trust-lbl">Wholesale Clients</div>
+      </div>
+      <div class="trust-item reveal">
+        <div class="trust-num">10k+</div>
+        <div class="trust-lbl">Sarees Produced</div>
+      </div>
+      <div class="trust-item reveal">
+        <div class="trust-num">100%</div>
+        <div class="trust-lbl">MSME Certified</div>
+      </div>
     </div>
-    <div class="product-info">
-      <span class="p-cat">Modern Prints</span>
-      <h3 class="p-name">Organza Floral Print</h3>
-      <p class="p-price">₹550 Wholesale</p>
+  </section>
+
+  <section id="products" aria-label="Our saree collection">
+    <div class="products-header reveal">
+      <div class="section-eyebrow">Latest Catalog</div>
+      <h2 class="section-title">Signature Collections</h2>
+      <p class="section-sub">Meticulously crafted patterns using premium Georgette and Fancy fabrics for the modern retailer.</p>
+    </div>
+    
+    <div class="products-grid">
+      <div class="product-card reveal">
+        <div class="product-img-wrap">
+          <div class="product-img-inner saree-geo">
+            <div class="saree-motif"><div class="saree-motif-diamond"></div></div>
+            <div class="saree-label">Signature Texture</div>
+          </div>
+        </div>
+        <div class="product-badge">Top Seller</div>
+        <div class="product-info">
+          <h3 class="product-name">Georgette Printed Series</h3>
+          <p class="product-desc">Lightweight georgette with intricate digital floral prints. Elegant drape for high-end boutique sales.</p>
+          <div class="product-footer">
+            <div class="product-price">₹850 <span>Per Piece</span></div>
+            <button class="btn-buy-now" data-pname="Georgette Printed Series" data-pprice="₹850">Order Now</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card reveal">
+        <div class="product-img-wrap">
+          <div class="product-img-inner saree-silk">
+            <div class="saree-motif"><div class="saree-motif-diamond"></div></div>
+            <div class="saree-label">Premium Lustre</div>
+          </div>
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">Silk Fancy Saree</h3>
+          <p class="product-desc">Rich finish silk blend with zari borders. Perfect for festive and wedding seasons.</p>
+          <div class="product-footer">
+            <div class="product-price">₹1,250 <span>Per Piece</span></div>
+            <button class="btn-buy-now" data-pname="Silk Fancy Saree" data-pprice="₹1,250">Order Now</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card reveal">
+        <div class="product-img-wrap">
+          <div class="product-img-inner saree-crepe">
+            <div class="saree-motif"><div class="saree-motif-diamond"></div></div>
+            <div class="saree-label">Exclusive Weave</div>
+          </div>
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">Crepe Designer Wear</h3>
+          <p class="product-desc">Soft crepe material with unique geometric patterns. Durable and high-comfort fabric.</p>
+          <div class="product-footer">
+            <div class="product-price">₹980 <span>Per Piece</span></div>
+            <button class="btn-buy-now" data-pname="Crepe Designer Wear" data-pprice="₹980">Order Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="wholesale" aria-label="Wholesale details">
+    <div class="reveal">
+      <div class="section-eyebrow">Wholesale Benefits</div>
+      <h2 class="ws-title">Grow Your Retail Business With Us</h2>
+      <p class="ws-sub">Deepanjali Prints is more than a supplier; we are your growth partners. Located in Surat’s prime textile hub, we ensure regular stock supply and the latest trends.</p>
+      <div class="ws-actions">
+        <button class="btn-ws-primary" onclick="window.open('https://wa.me/919510573799', '_blank')">Get Full Catalog</button>
+        <button class="btn-ws-outline" onclick="goTo('locationSection')">Visit Store</button>
+      </div>
+    </div>
+    
+    <div class="ws-cards reveal">
+      <div class="ws-card">
+        <div class="ws-icon">💰</div>
+        <div>
+          <div class="ws-card-title">Best Wholesale Pricing</div>
+          <div class="ws-card-text">Factory-direct pricing with volume discounts. Margins designed to maximize your retail profitability.</div>
+        </div>
+      </div>
+      <div class="ws-card">
+        <div class="ws-icon">🤝</div>
+        <div>
+          <div class="ws-card-title">Dedicated Support</div>
+          <div class="ws-card-text">Personal account handling by Brahma & Mahesh Matolia. WhatsApp reachable 7 days a week.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="paymentSection" aria-label="Booking payment">
+    <div class="pay-box reveal">
+      <div class="section-eyebrow" style="justify-content:center">Secure Your Slot</div>
+      <h2 class="section-title">Pay Booking Amount</h2>
+      <p class="section-sub" style="margin-bottom:0">Reserve your wholesale slot with a refundable ₹100 booking fee. Our team will connect with you within 2 hours.</p>
+      <div class="pay-amount"><sup>₹</sup>100</div>
+      <div class="pay-note">Refundable Booking Fee · Secured</div>
+      <button class="btn-pay" id="payBtn">Pay ₹100 — Book Now</button>
+      <div class="pay-secure">🔒 100% Secure via Razorpay</div>
+    </div>
+  </section>
+
+  <section id="locationSection" aria-label="Store location">
+    <div class="map-top">
+      <div class="reveal">
+        <div class="section-eyebrow" style="color:var(--gold)">Find Us</div>
+        <h2 class="map-top-title">Visit Our Store</h2>
+        <p style="color:rgba(255,255,255,.4);font-size:.82rem;margin-top:8px;font-weight:300">Millennium Textile Market, Ring Road, Surat</p>
+      </div>
+      <div class="map-top-addr reveal">
+        O-1776-1777, Ground Floor<br/>
+        Millennium Textile Market, Ring Road<br/>
+        Surat — Gujarat<br/><br/>
+        <a href="tel:9510573799">📞 +91 9510573799</a><br/>
+        <a href="mailto:voidframe1@gmail.com">✉ voidframe1@gmail.com</a>
+      </div>
+    </div>
+    <div class="map-frame">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3720.2520698188176!2d72.84279097486801!3d21.182142282496734!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be04fbc55d55555%3A0xc3f8e0789725514f!2sMillennium%20Textile%20Market!5e0!3m2!1sen!2sin!4v1709458921832!5m2!1sen!2sin" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Deepanjali Prints Location">
+      </iframe>
+    </div>
+  </section>
+
+  <footer role="contentinfo">
+    <div class="footer-grid">
+      <div>
+        <img id="ftLogo" class="ft-logo" src="" alt="Deepanjali Prints"/>
+        <p class="ft-desc">House of Fancy Sarees. Wholesale MSME saree business supplying premium fabrics across India from the textile capital of Surat.</p>
+        <div class="ft-msme">MSME Registered</div>
+      </div>
+      <div>
+        <div class="ft-col-head">Quick Links</div>
+        <ul class="ft-links">
+          <li><a href="#products">Our Collection</a></li>
+          <li><a href="#wholesale">Wholesale Info</a></li>
+          <li><a href="#paymentSection">Book Now</a></li>
+          <li><a href="#locationSection">Location</a></li>
+          <li><a href="https://wa.me/919510573799" target="_blank" rel="noopener">WhatsApp Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ft-col-head">Contact</div>
+        <div class="ft-contact-row">
+          <span class="ft-ci">📞</span>
+          <div class="ft-ct"><a href="tel:9510573799">+91 9510573799</a><br/>Brahma & Mahesh Matolia</div>
+        </div>
+        <div class="ft-contact-row">
+          <span class="ft-ci">✉</span>
+          <div class="ft-ct"><a href="mailto:voidframe1@gmail.com">voidframe1@gmail.com</a></div>
+        </div>
+        <div class="ft-contact-row">
+          <span class="ft-ci">📍</span>
+          <div class="ft-ct">O-1776-1777, Ground Floor<br/>Millennium Textile Market<br/>Ring Road, Surat</div>
+        </div>
+        <div class="ft-contact-row">
+          <span class="ft-ci">🕐</span>
+          <div class="ft-ct">Mon–Sat: 10 AM – 8 PM<br/>Sun: 11 AM – 5 PM</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Deepanjali Prints. All rights reserved.</p>
+      <p>Wholesale Sarees · Surat · MSME Registered</p>
+    </div>
+  </footer>
+</div><div id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-head-text">
+        <h3 id="modalTitle">Place Wholesale Order</h3>
+        <p>Fill details — we'll confirm via WhatsApp</p>
+      </div>
+      <button id="modalClose" aria-label="Close order form">✕</button>
+    </div>
+    <div id="modalProductLabel">Georgette Printed Saree — ₹850 / piece</div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-lbl" for="fName">Your Name <span class="req">*</span></label>
+        <input class="form-inp" id="fName" type="text" placeholder="Enter your full name" autocomplete="name"/>
+        <p class="form-error-msg" id="errName">Please enter your name.</p>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl" for="fPhone">Phone Number <span class="req">*</span></label>
+        <input class="form-inp" id="fPhone" type="tel" placeholder="+91 XXXXX XXXXX" autocomplete="tel"/>
+        <p class="form-error-msg" id="errPhone">Please enter a valid phone number.</p>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl" for="fQty">Quantity (pieces) <span class="req">*</span></label>
+        <input class="form-inp" id="fQty" type="number" placeholder="Minimum 10 pieces" min="1"/>
+        <p class="form-error-msg" id="errQty">Please enter quantity.</p>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">Delivery Option <span class="req">*</span></label>
+        <div class="delivery-wrap" id="deliveryWrap">
+          <div class="del-opt" data-value="Same Day" tabindex="0" role="radio" aria-checked="false">
+            <input type="radio" name="delivery" value="Same Day" id="delSameDay"/>
+            <div class="del-opt-text">
+              <span class="del-opt-main">Same Day</span>
+              <span class="del-opt-sub">Dispatch today by 6 PM</span>
+            </div>
+          </div>
+          <div class="del-opt" data-value="3 Business Days" tabindex="0" role="radio" aria-checked="false">
+            <input type="radio" name="delivery" value="3 Business Days" id="del3Days"/>
+            <div class="del-opt-text">
+              <span class="del-opt-main">3 Business Days</span>
+              <span class="del-opt-sub">Standard courier delivery</span>
+            </div>
+          </div>
+        </div>
+        <p class="form-error-msg" id="errDelivery">Please select a delivery option.</p>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-modal-cancel" id="modalCancelBtn">Cancel</button>
+      <button class="btn-modal-submit" id="modalSubmitBtn">
+        <span>Send via WhatsApp</span>
+        <span style="font-size:1rem">💬</span>
+      </button>
     </div>
   </div>
+</div>
 
-  <div class="product-card reveal" onclick="openOrderModal('Heavy Georgette Work', '₹1,250')">
-    <div class="product-img-box">
-      <img src="[https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?q=80&w=800&auto=format&fit=crop](https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?q=80&w=800&auto=format&fit=crop)" alt="Saree 3">
+<button id="chatBtn" aria-label="Open chat">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+  </svg>
+  <div class="chat-dot" aria-hidden="true">3</div>
+</button>
+
+<div id="chatPanel" role="complementary" aria-label="Chat support">
+  <div class="chat-head">
+    <div class="chat-head-left">
+      <div class="chat-av">
+        <img id="chatAvLogo" src="" alt="Deepanjali Prints"/>
+      </div>
+      <div>
+        <div class="chat-name-lbl">Deepanjali Prints</div>
+        <div class="chat-online">Online — Replies in minutes</div>
+      </div>
     </div>
-    <div class="product-info">
-      <span class="p-cat">Party Wear</span>
-      <h3 class="p-name">Heavy Georgette Work</h3>
-      <p class="p-price">₹1,250 Wholesale</p>
-    </div>
+    <button id="chatClose" aria-label="Close chat">✕</button>
   </div>
-
-  <div class="product-card reveal" onclick="openOrderModal('Kanchipuram Style Art', '₹950')">
-    <div class="product-img-box">
-      <img src="[https://images.unsplash.com/photo-1543087622-6a367cff7291?q=80&w=800&auto=format&fit=crop](https://images.unsplash.com/photo-1543087622-6a367cff7291?q=80&w=800&auto=format&fit=crop)" alt="Saree 4">
-    </div>
-    <div class="product-info">
-      <span class="p-cat">Traditional</span>
-      <h3 class="p-name">Kanchipuram Style Art</h3>
-      <p class="p-price">₹950 Wholesale</p>
-    </div>
+  <div id="chatMsgs" role="log" aria-live="polite">
+    <div class="msg-bot">👋 Namaste! Welcome to Deepanjali Prints — House of Fancy Sarees. How can I help you today?</div>
   </div>
-  
-  <div class="product-card reveal" onclick="openOrderModal('Soft Litchi Silk', '₹680')">
-    <div class="product-img-box">
-      <img src="[https://images.unsplash.com/photo-1611080626919-7cf5a9caab53?q=80&w=800&auto=format&fit=crop](https://images.unsplash.com/photo-1611080626919-7cf5a9caab53?q=80&w=800&auto=format&fit=crop)" alt="Saree 5">
-    </div>
-    <div class="product-info">
-      <span class="p-cat">Daily Wear</span>
-      <h3 class="p-name">Soft Litchi Silk</h3>
-      <p class="p-price">₹680 Wholesale</p>
-    </div>
+  <div id="chatOpts">
+    <button class="chat-opt-btn" data-reply="pricing">💰 Wholesale Pricing</button>
+    <button class="chat-opt-btn" data-reply="delivery">🚚 Delivery Options</button>
+    <button class="chat-opt-btn" data-reply="location">📍 Our Location</button>
+    <button class="chat-opt-btn" data-reply="moq">📦 Minimum Order Qty</button>
   </div>
-
-  <div class="product-card reveal" onclick="openOrderModal('Sequence Net Fancy', '₹1,100')">
-    <div class="product-img-box">
-      <img src="[https://images.unsplash.com/photo-1574169208507-84376144848b?q=80&w=800&auto=format&fit=crop](https://images.unsplash.com/photo-1574169208507-84376144848b?q=80&w=800&auto=format&fit=crop)" alt="Saree 6">
-    </div>
-    <div class="product-info">
-      <span class="p-cat">Fancy Collection</span>
-      <h3 class="p-name">Sequence Net Fancy</h3>
-      <p class="p-price">₹1,100 Wholesale</p>
-    </div>
-  </div>
-</div>
-</div>
-</section>
-
-<section id="about" class="section-padding about">
-<div class="container">
-<div class="about-grid">
-<img src="https://images.unsplash.com/photo-1582533561751-ef6f6ab93a2e?q=80&w=800&auto=format&fit=crop" alt="Workshop" class="about-img reveal">
-<div class="about-text-box reveal">
-<span class="section-tag">Since 1998</span>
-<h2 class="about-title">The Heart of Surat's Textile Heritage</h2>
-<p class="about-p">Deepanjali Prints has been at the forefront of the fancy saree industry for over two decades. We specialize in bulk manufacturing and wholesale distribution of high-quality fabrics and intricate designs.</p>
-<p class="about-p">Our commitment is to provide boutique owners and retailers across India with the finest collections that blend traditional Indian aesthetics with modern fashion trends.</p>
-<div style="margin-top:30px">
-<div style="display:flex;gap:40px">
-<div>
-<h4 style="font-family:var(--font-serif);font-size:1.5rem">500+</h4>
-<p style="font-size:0.8rem;text-transform:uppercase;color:var(--grey-dark)">Designs</p>
-</div>
-<div>
-<h4 style="font-family:var(--font-serif);font-size:1.5rem">12k+</h4>
-<p style="font-size:0.8rem;text-transform:uppercase;color:var(--grey-dark)">Retailers</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-
-<footer id="contact">
-<div class="container">
-<div class="footer-grid">
-<div>
-<span class="footer-logo">Deepanjali Prints</span>
-<p class="footer-p">Leading wholesale manufacturer of fancy sarees in Surat. Quality fabrics, exclusive designs, and nationwide delivery.</p>
-</div>
-<div>
-<h4 class="footer-head">Company</h4>
-<ul class="footer-links">
-<li><a href="#">About Us</a></li>
-<li><a href="#">Wholesale Policy</a></li>
-<li><a href="#">Track Order</a></li>
-<li><a href="#">Contact Support</a></li>
-</ul>
-</div>
-<div>
-<h4 class="footer-head">Visit Warehouse</h4>
-<p class="footer-p" style="color:var(--grey-mid);line-height:1.8">
-4021-22, New Textile Market,
-
-
-Ring Road, Surat, Gujarat - 395002
-
-
-
-<strong>Mon - Sat:</strong> 10:00 AM - 8:00 PM
-
-
-<strong>Phone:</strong> +91 98765 43210
-</p>
-</div>
-</div>
-<div class="footer-bottom">
-&copy; 2024 DEEPANJALI PRINTS. ALL RIGHTS RESERVED.
-</div>
-</div>
-</footer>
-
-<div class="modal-overlay" id="orderModal">
-<div class="modal-content">
-<span class="close-modal" onclick="closeOrderModal()">&times;</span>
-<h2 class="modal-title" id="mProductTitle">Inquiry For Wholesale</h2>
-<p id="mProductPrice" style="color:var(--gold);margin-bottom:25px;font-weight:600"></p>
-
-<div class="form-group">
-  <label>Full Name</label>
-  <input type="text" id="fName" placeholder="Enter your name">
-  <div class="err-msg" id="errName">Please enter your name</div>
+  <button id="chatWaLink">💬 Continue on WhatsApp</button>
 </div>
 
-<div class="form-group">
-  <label>WhatsApp Number</label>
-  <input type="tel" id="fPhone" placeholder="+91 00000 00000">
-  <div class="err-msg" id="errPhone">Please enter a valid phone number</div>
-</div>
-
-<div class="form-group">
-  <label>Minimum Order Quantity (PCS)</label>
-  <input type="number" id="fQty" value="10" min="1">
-  <div class="err-msg" id="errQty">Min. order quantity is 10 pcs</div>
-</div>
-
-<div class="form-group">
-  <label>Preferred Delivery</label>
-  <div class="delivery-options">
-    <div class="delivery-chip" onclick="setDelivery('Standard', this)">Standard</div>
-    <div class="delivery-chip" onclick="setDelivery('Express', this)">Express</div>
-    <div class="delivery-chip" onclick="setDelivery('Self Pickup', this)">Pickup</div>
-  </div>
-  <div class="err-msg" id="errDelivery">Please select a delivery method</div>
-</div>
-
-<button class="submit-btn" onclick="submitOrder()">Confirm Inquiry via WhatsApp</button>
-</div>
-</div>
-
-<div class="wa-widget">
-<div class="wa-card" id="waCard">
-<div class="wa-header">
-<div class="wa-avatar"></div>
-<div class="wa-info">
-<span class="wa-name">Deepanjali Sales</span>
-<span class="wa-status">Online (Reply in 5 mins)</span>
-</div>
-</div>
-<div class="wa-body">
-<div class="wa-bubble">Namaste! How can we help you with your wholesale requirement today?</div>
-<div class="chat-options" id="waOptions">
-</div>
-</div>
-</div>
-<div class="wa-btn" onclick="toggleWaCard()">
-<svg viewBox="0 0 32 32"><path d="M16 0c-8.837 0-16 7.163-16 16 0 2.825.737 5.48 2.032 7.785l-2.032 7.715 7.925-2.03c2.28 1.258 4.908 1.972 7.71 1.972 8.837 0 16-7.163 16-16s-7.163-16-16-16zM16 29.288c-2.43 0-4.707-.638-6.685-1.758l-.48-.27-4.693 1.202 1.222-4.63-.3-.478c-1.22-1.95-1.93-4.25-1.93-6.714 0-7.3 5.94-13.24 13.24-13.24s13.24 5.94 13.24 13.24-5.94 13.24-13.24 13.24zM22.518 19.34c-.358-.18-2.12-1.045-2.448-1.164-.33-.12-.57-.18-.81.18-.24.358-.925 1.164-1.135 1.403-.21.238-.42.27-.778.09-.358-.18-1.51-.557-2.877-1.776-1.063-.95-1.782-2.122-1.99-2.48-.21-.358-.022-.553.158-.73.162-.162.358-.42.538-.627.18-.21.24-.358.358-.597.12-.24.06-.448-.03-.627-.09-.18-.81-1.948-1.11-2.665-.29-.71-.587-.61-.81-.622-.21-.01-.448-.01-.687-.01-.24 0-.627.09-.955.448-.328.358-1.254 1.224-1.254 2.986s1.284 3.464 1.463 3.702c.18.24 2.527 3.858 6.12 5.412.855.37 1.523.59 2.043.755.86.273 1.64.235 2.257.143.69-.102 2.12-.865 2.418-1.702.3-.836.3-1.552.21-1.7-.09-.148-.33-.238-.687-.418z"></path></svg>
-</div>
-</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
-/* ============================================================
-GLOBAL CONFIG
-============================================================ */
-var WA_NUMBER = "919876543210";
-var currentProduct = "";
-var currentPrice = "";
-var selectedDelivery = "";
+(function() {
+  'use strict';
 
-/* ============================================================
-INITIALIZATION
-============================================================ */
-window.addEventListener('DOMContentLoaded', function() {
-bindRevealObserver();
-initWaOptions();
-});
+  /* ---- LOGO ---- */
+  var LOGO = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAYGBgYHBgcICAcKCwoLCg8ODAwODxYQERAREBYiFRkVFRkVIh4kHhweJB42KiYmKjY+NDI0PkxERExfWl98fKcBBgYGBgcGBwgIBwoLCgsKDw4MDA4PFhAREBEQFiIVGRUVGRUiHiQeHB4kHjYqJiYqNj40MjQ+TERETF9aX3x8p//AABEIBEUGjAMBIQACEQEDEQH/xADCAAEAAgIDAQAAAAAAAAAAAAAABwgFBgEDBAIQAQACAgEDAgMDCQUFCAEDBQABAgMEBQYHERIhEzFBIlFhFBUjMkJScXJzFzM1NlQ0gZGSshYkVWJ0obHCk0NEgiU3U2PSAQEAAgMBAQEAAAAAAAAAAAAABQYDBAcCAQgRAQACAQMCAgYGCAMHBAEEAwABAgMEBREGEiExBxNBUWFxFCIyNHKBIzM1QlJzkbEVYoI2Q1N0kqGyFiTBwmMXJUVkVIOi/9oADAMBAAIRAxEAPwC1IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAF8mOkeb3rX+M+B9iJtPERMyVmLR5iYmAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ73d5DJj1dfFS3jzdp6+3bpMvyWTpLFGXf9DWfKLTL';
 
-/* ============================================================
-MODAL LOGIC
-============================================================ */
-function openOrderModal(name, price) {
-currentProduct = name;
-currentPrice = price;
+  /* ---- CONFIG ---- */
+  var WA_NUMBER = '919510573799';
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_XXXXXXXXXXXX/exec'; // REPLACE THIS WITH YOUR SCRIPT URL
 
-document.getElementById('mProductTitle').innerText = name;
-document.getElementById('mProductPrice').innerText = price + " / piece";
+  var currentProduct = '';
+  var currentPrice = '';
 
-document.getElementById('orderModal').style.display = 'flex';
-document.body.style.overflow = 'hidden';
-}
+  /* ============================================================
+     SUBMIT ORDER (Google Sheets & WhatsApp)
+  ============================================================ */
+  function submitOrder() {
+    var nameInput = document.getElementById('fName');
+    var phoneInput = document.getElementById('fPhone');
+    var qtyInput = document.getElementById('fQty');
+    
+    var name = nameInput.value.trim();
+    var phone = phoneInput.value.trim();
+    var qty = qtyInput.value.trim();
+    
+    var del = '';
+    var opts = document.querySelectorAll('.del-opt');
+    opts.forEach(function(opt) {
+      if (opt.classList.contains('selected')) {
+        del = opt.getAttribute('data-value');
+      }
+    });
 
-function closeOrderModal() {
-document.getElementById('orderModal').style.display = 'none';
-document.body.style.overflow = 'auto';
-resetErrors();
-}
+    var hasErr = false;
+    if (!name) { document.getElementById('errName').classList.add('show'); nameInput.classList.add('error'); hasErr = true; }
+    else { document.getElementById('errName').classList.remove('show'); nameInput.classList.remove('error'); }
+    
+    if (!phone || phone.length < 10) { document.getElementById('errPhone').classList.add('show'); phoneInput.classList.add('error'); hasErr = true; }
+    else { document.getElementById('errPhone').classList.remove('show'); phoneInput.classList.remove('error'); }
+    
+    if (!qty || parseInt(qty) < 1) { document.getElementById('errQty').classList.add('show'); qtyInput.classList.add('error'); hasErr = true; }
+    else { document.getElementById('errQty').classList.remove('show'); qtyInput.classList.remove('error'); }
+    
+    if (!del) { document.getElementById('errDelivery').classList.add('show'); hasErr = true; }
+    else { document.getElementById('errDelivery').classList.remove('show'); }
 
-function setDelivery(val, el) {
-selectedDelivery = val;
-var chips = document.querySelectorAll('.delivery-chip');
-chips.forEach(function(c) { c.classList.remove('active'); });
-el.classList.add('active');
-document.getElementById('errDelivery').classList.remove('show');
-}
+    if (hasErr) return;
 
-function resetErrors() {
-var errs = document.querySelectorAll('.err-msg');
-errs.forEach(function(e) { e.classList.remove('show'); });
-}
+    var subBtn = document.getElementById('modalSubmitBtn');
+    var subText = subBtn.querySelector('span:first-child');
+    subBtn.disabled = true;
+    subText.innerText = 'Processing...';
 
-function showFieldError(inputId, errId) {
-document.getElementById(errId).classList.add('show');
-}
+    // 1. Google Sheets Integration (Form Submission)
+    var formData = new FormData();
+    formData.append('Timestamp', new Date().toLocaleString());
+    formData.append('Name', name);
+    formData.append('Phone', phone);
+    formData.append('Product', currentProduct);
+    formData.append('Quantity', qty);
+    formData.append('Delivery', del);
 
-function submitOrder() {
-var name     = (document.getElementById('fName')  || {}).value || '';
-var phone    = (document.getElementById('fPhone') || {}).value || '';
-var qty      = (document.getElementById('fQty')   || {}).value || '';
+    fetch(SCRIPT_URL, { method: 'POST', body: formData })
+      .then(function(res) {
+        console.log('Logged to Sheet successfully');
+        finishSubmission();
+      })
+      .catch(function(err) {
+        console.error('Error logging to Sheet:', err);
+        // We still proceed to WhatsApp even if logging fails
+        finishSubmission();
+      });
 
-name  = name.trim();
-phone = phone.trim();
-qty   = qty.trim();
+    function finishSubmission() {
+      // 2. WhatsApp Message
+      var msg = 'Hi Deepanjali Prints, I want to place a wholesale order.\n\n' +
+                '📦 *Order Details*:\n' +
+                '------------------------\n' +
+                'Product: ' + currentProduct + '\n' +
+                'Price: ' + currentPrice + ' per pc\n' +
+                'Quantity: ' + qty + ' pieces\n\n' +
+                '👤 *Customer*:\n' +
+                '------------------------\n' +
+                'Name: ' + name + '\n' +
+                'Phone: ' + phone + '\n' +
+                'Delivery: ' + del;
+      
+      openWhatsApp(msg);
+      closeModal();
+      
+      // Reset button
+      subBtn.disabled = false;
+      subText.innerText = 'Send via WhatsApp';
+      
+      // Clear fields
+      nameInput.value = '';
+      phoneInput.value = '';
+      qtyInput.value = '';
+    }
+  }
 
-var valid = true;
+  /* ============================================================
+     CORE LOGIC
+  ============================================================ */
 
-if (!name) {
-showFieldError('fName','errName');
-valid = false;
-}
+  function bindHeader() {
+    window.addEventListener('scroll', function() {
+      var header = document.getElementById('mainHeader');
+      if (window.scrollY > 50) header.classList.add('scrolled');
+      else header.classList.remove('scrolled');
+    });
+  }
 
-if (!phone || phone.length < 6) {
-showFieldError('fPhone','errPhone');
-valid = false;
-}
+  function bindMobileNav() {
+    var ham = document.getElementById('hamBtn');
+    var close = document.getElementById('mobCloseBtn');
+    var nav = document.getElementById('mobileNav');
+    
+    if (ham && nav) ham.addEventListener('click', function() { nav.classList.add('open'); });
+    if (close && nav) close.addEventListener('click', function() { nav.classList.remove('open'); });
+    
+    nav.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() { nav.classList.remove('open'); });
+    });
+  }
 
-if (!qty || parseInt(qty) < 1) {
-showFieldError('fQty','errQty');
-valid = false;
-}
+  function bindHeroButtons() {
+    /* goTo utility is at bottom */
+  }
 
-if (!selectedDelivery) {
-var errD = document.getElementById('errDelivery');
-if (errD) errD.classList.add('show');
-valid = false;
-}
+  function bindBuyNowButtons() {
+    var btns = document.querySelectorAll('.btn-buy-now');
+    btns.forEach(function(b) {
+      b.addEventListener('click', function() {
+        var name = b.getAttribute('data-pname');
+        var price = b.getAttribute('data-pprice');
+        openModal(name, price);
+      });
+    });
+  }
 
-if (!valid) return;
+  function openModal(name, price) {
+    currentProduct = name;
+    currentPrice = price;
+    document.getElementById('modalProductLabel').innerText = name + ' — ' + price + ' / piece';
+    
+    var overlay = document.getElementById('modalOverlay');
+    if (overlay) {
+      overlay.style.display = 'flex';
+      overlay.offsetHeight; 
+      overlay.classList.add('active');
+    }
+    document.body.style.overflow = 'hidden';
+    
+    setTimeout(function() {
+      var f = document.getElementById('fName');
+      if (f) f.focus();
+    }, 100);
+  }
 
-// GOOGLE SHEETS INTEGRATION
-var formData = new FormData();
-formData.append("name", name);
-formData.append("phone", phone);
-formData.append("product", currentProduct || "Saree");
-formData.append("quantity", qty);
-formData.append("delivery", selectedDelivery || "Standard");
+  function closeModal() {
+    var overlay = document.getElementById('modalOverlay');
+    if (overlay) overlay.classList.remove('active');
+    setTimeout(function() {
+      if (overlay) overlay.style.display = 'none';
+      document.body.style.overflow = '';
+    }, 300);
+  }
 
-fetch("https://script.google.com/macros/s/AKfycbzvqWwPhSM3s2sR4CRDFd5FN7OjiZj9ehwTeIR6wN45IF33Txgp4Z6HUS87F3CdiqJK5g/exec", {
-method: "POST",
-body: formData
-});
+  function bindModal() {
+    var closeBtn = document.getElementById('modalClose');
+    var cancelBtn = document.getElementById('modalCancelBtn');
+    var overlay = document.getElementById('modalOverlay');
+    
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+    
+    if (overlay) {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closeModal();
+      });
+    }
 
-// WHATSAPP MESSAGE
-var message =
-'Hi, I want to place a wholesale order.\n' +
-'Product: '  + (currentProduct || "Saree")  + '\n' +
-'Price: '    + currentPrice    + ' per piece\n' +
-'Quantity: ' + qty              + ' pieces\n' +
-'Name: '     + name            + '\n' +
-'Phone: '    + phone           + '\n' +
-'Delivery: ' + (selectedDelivery || "Standard");
+    /* Delivery Selection */
+    var opts = document.querySelectorAll('.del-opt');
+    opts.forEach(function(o) {
+      o.addEventListener('click', function() {
+        opts.forEach(function(x) {
+          x.classList.remove('selected');
+          var r = x.querySelector('input');
+          if (r) r.checked = false;
+        });
+        o.classList.add('selected');
+        var rad = o.querySelector('input');
+        if (rad) rad.checked = true;
+      });
+      o.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          o.click();
+        }
+      });
+    });
 
-var waURL = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(message);
+    /* Submit Order */
+    var subBtn = document.getElementById('modalSubmitBtn');
+    if (subBtn) {
+      subBtn.addEventListener('click', function() {
+        submitOrder();
+      });
+    }
+  }
 
-closeOrderModal();
+  function bindWholesaleButtons() {
+    /* Basic button actions are handled by inline onclick for speed */
+  }
 
-setTimeout(function() {
-window.open(waURL, '_blank', 'noopener,noreferrer');
-}, 800);
-}
+  function bindPayButton() {
+    var btn = document.getElementById('payBtn');
+    if (btn) {
+      btn.addEventListener('click', function() {
+        var options = {
+          "key": "rzp_test_XXXXXXXXXXXXXX", // Replace with live key
+          "amount": 10000,
+          "currency": "INR",
+          "name": "Deepanjali Prints",
+          "description": "Wholesale Booking Fee",
+          "handler": function (response){
+              alert("Payment Successful! ID: " + response.razorpay_payment_id);
+              openWhatsApp('I have paid ₹100 booking amount. Please guide me with payment steps.');
+          }
+        };
+        var rzp = new Razorpay(options);
+        rzp.open();
+      });
+    }
+  }
 
-/* ============================================================
-WA WIDGET LOGIC
-============================================================ */
-function toggleWaCard() {
-var card = document.getElementById('waCard');
-card.classList.toggle('active');
-}
+  /* ============================================================
+     CHATBOT
+  ============================================================ */
+  var chatIsOpen = false;
+  var chatReplies = {
+    pricing: {
+      label: '💰 Wholesale Pricing',
+      text: 'Our wholesale prices:\n• Georgette Printed: ₹850\n• Silk Fancy: ₹1,250\n• Crepe Designer: ₹980\n\nFull catalog available on WhatsApp.'
+    },
+    delivery: {
+      label: '🚚 Delivery Options',
+      text: 'We ship PAN India via trusted partners like BlueDart & Delhivery. Standard delivery: 3-5 business days.'
+    },
+    location: {
+      label: '📍 Our Location',
+      text: 'Visit us at: O-1776-1777, Millennium Textile Market, Ring Road, Surat, Gujarat.'
+    },
+    moq: {
+      label: '📦 Minimum Order Qty',
+      text: 'Minimum order for wholesale is 10 pieces per design/set. Custom manufacturing available for 50+ units.'
+    }
+  };
 
-function initWaOptions() {
-var opts = document.getElementById('waOptions');
-if (!opts) return;
+  function bindChatbot() {
+    var btn = document.getElementById('chatBtn');
+    var panel = document.getElementById('chatPanel');
+    var close = document.getElementById('chatClose');
+    var waLink = document.getElementById('chatWaLink');
+    var opts = document.querySelectorAll('.chat-opt-btn');
 
-opts.addEventListener('click', function(e) {
-var btn = e.target.closest('.chat-opt-btn');
-if (!btn) return;
+    if (btn && panel) btn.addEventListener('click', function() { panel.classList.toggle('open'); });
+    if (close && panel) close.addEventListener('click', function() { panel.classList.remove('open'); });
+    if (waLink) waLink.addEventListener('click', function() { openWhatsApp('Hi, I am interested in your wholesale sarees.'); });
 
-var reply = btn.getAttribute(&#39;data-reply&#39;);
-var text = &quot;&quot;;
+    opts.forEach(function(opt) {
+      opt.addEventListener('click', function() {
+        var key = opt.getAttribute('data-reply');
+        var data = chatReplies[key];
+        if (data) {
+          addChatMsg(data.label, 'user');
+          setTimeout(function() { addChatMsg(data.text, 'bot'); }, 600);
+        }
+      });
+    });
+  }
 
-if (reply === &#39;catalogue&#39;) text = &quot;Hi, I would like to see your latest wholesale catalogue.&quot;;
-if (reply === &#39;location&#39;)  text = &quot;Hi, please share your warehouse location for a visit.&quot;;
-if (reply === &#39;moq&#39;)       text = &quot;Hi, what is the minimum order quantity for fancy sarees?&quot;;
+  function addChatMsg(text, type) {
+    var container = document.getElementById('chatMsgs');
+    if (!container) return;
+    
+    var div = document.createElement('div');
+    div.className = type === 'bot' ? 'msg-bot' : 'msg-user';
+    div.innerText = text;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+  }
 
-openWhatsApp(text);
-});
+  /* ============================================================
+     SCROLL REVEAL
+  ============================================================ */
+  function bindRevealObserver() {
+    if (!('IntersectionObserver' in window)) {
+      document.querySelectorAll('.reveal').forEach(function(el) { el.classList.add('revealed'); });
+      return;
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
-opts.innerHTML = [
-'<button class="chat-opt-btn" data-reply="catalogue">📔 View Catalogue</button>',
-'<button class="chat-opt-btn" data-reply="location">📍 Our Location</button>',
-'<button class="chat-opt-btn" data-reply="moq">📦 Minimum Order Qty</button>'
-].join('');
-}
+    document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
+  }
 
-/* ============================================================
-SCROLL REVEAL
-============================================================ /
-function bindRevealObserver() {
-if (!('IntersectionObserver' in window)) {
-/ Fallback: show all immediately */
-document.querySelectorAll('.reveal').forEach(function(el) {
-el.classList.add('revealed');
-});
-return;
-}
+  /* ============================================================
+     UTILITIES
+  ============================================================ */
+  window.goTo = function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      var top = el.getBoundingClientRect().top + window.pageYOffset - 70;
+      window.scrollTo({ top: top, behavior: 'smooth' });
+    }
+  };
 
-var observer = new IntersectionObserver(function(entries) {
-entries.forEach(function(entry) {
-if (entry.isIntersecting) {
-entry.target.classList.add('revealed');
-observer.unobserve(entry.target); /* only animate once */
-}
-});
-}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  function openWhatsApp(message) {
+    var url = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(message);
+    window.open(url, '_blank');
+  }
 
-document.querySelectorAll('.reveal').forEach(function(el) {
-observer.observe(el);
-});
-}
+  /* ---- INIT ---- */
+  document.addEventListener('DOMContentLoaded', function() {
+    /* Setup images */
+    document.getElementById('ldrLogo').src = LOGO;
+    document.getElementById('navLogo').src = LOGO;
+    document.getElementById('ftLogo').src = LOGO;
+    document.getElementById('chatAvLogo').src = LOGO;
 
-/* ============================================================
-UTILITIES
-============================================================ */
-function goTo(id) {
-var el = document.getElementById(id);
-if (el) {
-var top = el.getBoundingClientRect().top + window.pageYOffset - 70;
-window.scrollTo({ top: top, behavior: 'smooth' });
-}
-}
+    /* Initial Load Sequence */
+    setTimeout(function() {
+      document.getElementById('loader').classList.add('hidden');
+      document.getElementById('site').classList.add('visible');
+    }, 2800);
 
-function openWhatsApp(message) {
-var url = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(message);
-window.open(url, '_blank', 'noopener,noreferrer');
-}
+    bindHeader();
+    bindMobileNav();
+    bindHeroButtons();
+    bindBuyNowButtons();
+    bindModal();
+    bindWholesaleButtons();
+    bindPayButton();
+    bindChatbot();
+    bindRevealObserver();
+  });
+
+})();
 </script>
-
 </body>
 </html>
